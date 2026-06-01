@@ -1,0 +1,20 @@
+services:
+  mintlify:
+    image: ${MINTLIFY_IMAGE:?MINTLIFY_IMAGE is required}
+    container_name: ${MINTLIFY_CONTAINER_NAME:-geeknow-docs-mintlify}
+    working_dir: /app
+    command: sh -c "npx mintlify dev --no-open --port ${MINTLIFY_INTERNAL_PORT:-3000}"
+    environment:
+      HOME: /mintlify-home
+      MINTLIFY_INTERNAL_PORT: ${MINTLIFY_INTERNAL_PORT:-3000}
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING:-true}
+      WATCHPACK_POLLING: ${WATCHPACK_POLLING:-true}
+    ports:
+      - "${MINTLIFY_HOST_PORT:-3000}:${MINTLIFY_INTERNAL_PORT:-3000}"
+    volumes:
+      - mintlify_home:/mintlify-home
+    restart: unless-stopped
+
+volumes:
+  mintlify_home:
+    name: ${MINTLIFY_HOME_VOLUME:-geeknow-docs-mintlify-home}

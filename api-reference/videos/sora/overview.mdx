@@ -1,0 +1,44 @@
+---
+title: Sora 视频概览
+description: 按模型系列整理 Sora 视频生成与任务查询接口。
+---
+
+# Sora 视频
+
+Sora 系列当前使用 `POST /v1/videos` 创建视频任务，并通过 `GET /v1/videos/{task_id}` 查询任务状态和结果。
+
+- 请求体推荐使用 JSON。
+- 文生视频使用 `model`、`prompt`、`size`、`seconds`。
+- 首帧/参考图生视频使用 `input_reference`，也兼容 `image` / `images`。
+- 比例和分辨率使用顶层 `size`。
+
+<CardGroup cols={2}>
+  <Card title="视频生成" icon="clapperboard" href="/api-reference/videos/sora/generation">
+    `POST /v1/videos`，提交 Sora 视频任务。
+  </Card>
+  <Card title="任务查询" icon="hourglass" href="/api-reference/videos/sora/query">
+    `GET /v1/videos/{task_id}`，查询任务状态和结果。
+  </Card>
+</CardGroup>
+
+## 当前模型
+
+- `sora-2`
+- `sora-2-pro`
+
+## 当前接口行为
+
+| 项目 | 当前行为 |
+| --- | --- |
+| 创建接口 | `POST /v1/videos` |
+| 查询接口 | `GET /v1/videos/{task_id}` |
+| 请求格式 | JSON |
+| 参考图字段 | `input_reference` |
+| 尺寸字段 | 顶层 `size`，例如 `1280x720` 或 `720x1280` |
+| 时长字段 | 顶层 `seconds`，也兼容 `duration` |
+
+## 相关页面
+
+- [视频模型支持矩阵](/api-reference/videos/model-matrix)
+- [Sora 视频生成](./generation)
+- [Sora 任务查询](./query)

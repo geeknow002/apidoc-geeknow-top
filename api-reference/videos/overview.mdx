@@ -1,0 +1,54 @@
+---
+title: 视频系列概览
+description: 汇总按模型系列划分的视频接口文档。
+---
+
+# 视频系列
+
+视频能力按模型系列划分，便于分别查看不同模型的生成接口、查询接口与字段约束。
+
+<CardGroup cols={2}>
+  <Card title="模型支持矩阵" icon="table-cells" href="/api-reference/videos/model-matrix">
+    按模型家族查看视频能力、推荐入口、参考图传递方式和固定时长规则。
+  </Card>
+  <Card title="Grok 视频概览" icon="clapperboard" href="/api-reference/videos/grok/overview">
+    `grok-video-3`、`grok-video-3-pro`、`grok-video-3-max` 的总览页。
+  </Card>
+  <Card title="Grok 视频生成" icon="film" href="/api-reference/videos/grok/generation">
+    `POST /v1/videos`，按 Grok 系列真实字段提交任务。
+  </Card>
+  <Card title="Grok 任务查询" icon="hourglass" href="/api-reference/videos/grok/query">
+    `GET /v1/videos/{task_id}`，轮询任务状态并获取结果。
+  </Card>
+  <Card title="Sora 视频" icon="film" href="/api-reference/videos/sora/overview">
+    `sora-2` 的生成与查询文档。
+  </Card>
+  <Card title="Veo 视频" icon="sparkles" href="/api-reference/videos/veo/overview">
+    `veo_3_1`、`veo_3_1-fast` 的生成与查询文档。
+  </Card>
+  <Card title="国产视频模型" icon="sparkles" href="/api-reference/videos/aigc/overview">
+    `Vidu`、`Kling`、`Hunyuan`、`Mingmou`、`OS`、`GV`、`Hailuo`、`SV`、`JV` 等国产视频模型。
+  </Card>
+  <Card title="Seedance-2" icon="image" href="/api-reference/videos/seedance-2/overview">
+    `seedance-2.0-lite`、`seedance-2.0-pro`、`seedance-2.0-fast` 与素材接口。
+  </Card>
+</CardGroup>
+
+## 模型分组
+
+| 模型系列 | 页面 | 说明 |
+| --- | --- | --- |
+| Grok | [概览](/api-reference/videos/grok/overview) | `grok-video-3`、`grok-video-3-pro`、`grok-video-3-max` |
+| Sora | [概览](/api-reference/videos/sora/overview) | `sora-2` |
+| Veo | [概览](/api-reference/videos/veo/overview) | `veo_3_1`、`veo_3_1-fast` |
+| 国产视频模型 | [概览](/api-reference/videos/aigc/overview) | `Vidu`、`Kling`、`Hunyuan`、`Mingmou`、`OS`、`GV`、`Hailuo`、`SV`、`JV` |
+| Seedance-2 | [概览](/api-reference/videos/seedance-2/overview) | `seedance-2.0-lite`、`seedance-2.0-pro`、`seedance-2.0-fast` |
+
+## 推荐阅读顺序
+
+1. [视频模型支持矩阵](./model-matrix)
+2. [Grok 视频概览](./grok/overview)
+3. [Sora 视频概览](./sora/overview)
+4. [Veo 视频概览](./veo/overview)
+5. [国产视频模型概览](./aigc/overview)
+6. [Seedance-2 概览](./seedance-2/overview)

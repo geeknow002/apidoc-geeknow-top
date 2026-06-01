@@ -1,0 +1,173 @@
+---
+title: 视频模型支持矩阵
+description: 汇总当前视频模型系列的推荐入口、生成模式、参考图传递方式和时长限制。
+---
+
+# 视频模型支持矩阵
+
+这张表汇总当前视频模型系列的主入口、常见模式和参考图传递方式。
+
+## 模型总表
+
+| 模型家族 | 代表模型 | 文档页面 | 推荐入口 | 常用模式 | 参考图传法 |
+| --- | --- | --- | --- | --- | --- |
+| Sora | `sora-2` | [概览](/api-reference/videos/sora/overview) | `/v1/videos` | 文生视频、首帧生视频 | JSON `input_reference` |
+| Veo | `veo_3_1`、`veo_3_1-fast` | [概览](/api-reference/videos/veo/overview) | `/v1/videos` | 文生视频、首尾帧、参考生视频 | JSON `input_reference` |
+| Grok Video | `grok-video-3`、`grok-video-3-pro`、`grok-video-3-max` | [概览](/api-reference/videos/grok/overview) | `/v1/videos` | 文生视频、首帧生视频、首尾帧、参考生视频 | multipart `input_reference` |
+| 国产视频模型（AIGC） | `Vidu-*`、`Kling-*`、`GV-*`、`OS-*`、`Hunyuan-*`、`Mingmou-*`、`Hailuo-*`、`SV-*`、`JV-*` | [概览](/api-reference/videos/aigc/overview) | `/v1/videos` | 文生、图生、参考图、参考视频、首尾帧、动作控制、数字人、对口型、模板特效 | JSON `image` / `images` / `input_reference` / `metadata` |
+| Seedance-2 | `seedance-2.0-lite`、`seedance-2.0-pro`、`seedance-2.0-fast` | [概览](/api-reference/videos/seedance-2/overview) | `/v1/videos` | 文生视频、首帧、尾帧、参考图、参考视频、参考音频 | JSON 或仅 URL 的 multipart |
+
+## 分家族说明
+
+### Sora
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `sora-2` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [Sora 视频概览](/api-reference/videos/sora/overview) |
+| 常见字段 | `prompt`、`size`、`seconds`、`input_reference` |
+| 参考图 | JSON `input_reference`，也兼容 multipart |
+| 尺寸 | 通过顶层 `size` 传入，例如 `1280x720`、`720x1280` |
+| 时长 | 通过 `seconds` 提交；具体可用值以当前上游和渠道配置为准 |
+
+### Veo
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `veo_3_1`、`veo_3_1-fast` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [Veo 视频概览](/api-reference/videos/veo/overview) |
+| 常见模式 | 文生视频、首尾帧、参考生视频 |
+| 参考图 | JSON `input_reference`，由服务端转换为 Veo 请求结构 |
+| 注意事项 | 参考生视频模式下，会优先约束为横屏思路，避免上游不兼容 |
+
+### 国产视频模型（AIGC）
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `Vidu-*`、`Kling-*`、`GV-*`、`OS-*`、`Hunyuan-*`、`Mingmou-*`、`Hailuo-*`、`SV-*`、`JV-*` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 常见字段 | `model`、`prompt`、`seconds`、`duration`、`size`、`image`、`images`、`metadata` |
+| 参考图 | 支持 `image`、`images`、`input_reference`，高级场景也可通过 `metadata.file_infos` 传入 |
+| 典型场景 | 文生视频、图生视频、参考图、参考视频、首尾帧、动作控制、数字人、对口型、模板特效 |
+
+### Grok Video
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `grok-video-3`、`grok-video-3-pro`、`grok-video-3-max` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [Grok 视频概览](/api-reference/videos/grok/overview) |
+| 常见字段 | `prompt`、`seconds`、`aspect_ratio`、`size` |
+| 参考图 | 走 multipart `input_reference`，支持多张 |
+| 时长规则 | `grok-video-3-pro` 固定 `10s`，`grok-video-3-max` 固定 `15s` |
+| 特殊模式 | 额外支持“首帧生视频 + 参考图”的组合模式 |
+
+### Seedance-2
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `seedance-2.0-lite`、`seedance-2.0-pro`、`seedance-2.0-fast` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [Seedance-2 概览](/api-reference/videos/seedance-2/overview) |
+| 常见字段 | `prompt`、`duration`、`first_image`、`last_image`、`aspect_ratio`、`reference_images`、`reference_videos`、`reference_audios` |
+| 请求格式 | `application/json` 或 `multipart/form-data` |
+| 特别说明 | multipart 仅支持 URL 字段，不支持真实文件上传 |
+
+### 豆包 Seedance
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `doubao-seedance-1-5-pro_480p`、`doubao-seedance-1-5-pro_720p`、`doubao-seedance-1-5-pro_1080p` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 常见字段 | `prompt`、`seconds`、`size` |
+| 参考图 | multipart `first_frame_image`、`last_frame_image` |
+| 时长规则 | 当前时长限制在 `4` 到 `11` 秒之间 |
+| 注意事项 | 不适合“参考生视频”模式 |
+
+### 阿里 wan2.6
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `wan2.6-t2v:1280*720`、`wan2.6-t2v:1920*1080`、`wan2.6-i2v:1280*720`、`wan2.6-i2v:1920*1080` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 常见模式 | `t2v` 文生视频、`i2v` 图生视频 |
+| 分辨率 | 模型名里已经带固定分辨率档位 |
+| 参考图 | `i2v` 常见是单图输入 |
+
+### Vidu
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `Vidu-q3-pro`、`Vidu-q3-turbo` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 请求风格 | JSON |
+| 首帧图 | `image` |
+| 首尾帧 | `image` + `metadata.last_frame_url` |
+| 参考生视频 | `images` 最多常见 3 张 |
+
+### Kling
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `Kling-3.0`、`Kling-3.0-Omni` |
+| 推荐入口 | `POST /v1/videos` 或官方兼容路由 `/kling/v1/videos/*` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 请求风格 | JSON |
+| 常见字段 | `prompt`、`seconds`、`metadata.output_config` |
+| 参考图 | `image` |
+| 音频 | 可通过 `metadata.output_config.audio_generation` 控制 |
+
+### Hailuo
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `Hailuo-2.3`、`Hailuo-2.3-fast` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [国产视频模型概览](/api-reference/videos/aigc/overview) |
+| 请求风格 | JSON |
+| 常见字段 | `prompt`、`seconds`、`metadata.output_config.resolution` |
+| 参考图 | `image` |
+| 注意事项 | 不应依赖 `aspect_ratio`；当前更适合文生视频和首帧生视频 |
+
+## 生成模式支持
+
+| 模型家族 | 文生视频 | 首帧生视频 | 首尾帧 | 参考生视频 | 音频开关 |
+| --- | --- | --- | --- | --- | --- |
+| Sora | 支持 | 支持 | 部分场景依赖上游 | 部分场景通过多图参考实现 | 支持 |
+| Veo | 支持 | 可通过参考图实现 | 支持 | 支持 | 依赖上游 |
+| Grok Video | 支持 | 支持 | 支持 | 支持 | 依赖上游 |
+| 豆包 Seedance | 支持 | 支持 | 支持 | 不推荐 | 依赖上游 |
+| 阿里 wan2.6 | 支持 | `i2v` 支持 | 依赖上游 | 依赖上游 | 依赖上游 |
+| Vidu | 支持 | 支持 | 支持 | 支持 | 依赖上游 |
+| Kling | 支持 | 支持 | 当前不建议作为标准能力承诺 | 不建议 | 支持 |
+| Hailuo | 支持 | 支持 | 不建议 | 不建议 | 依赖上游 |
+
+## 常见 `model` 值速查
+
+下面这张表补充前端模型描述、渠道模型映射和价格表里常见的具体 `model` 值，便于直接复制到请求体中。
+
+| `model` | 归属 | 说明 |
+| --- | --- | --- |
+| `wan2.6-t2v:1280*720` | 阿里 wan2.6 | 阿里万象 wan2.6 文生视频；常见字段 `prompt` / `size` / `seconds`；该条目对应 `1280*720` 低价档位。 |
+| `wan2.6-t2v:1920*1080` | 阿里 wan2.6 | 阿里万象 wan2.6 文生视频；常见字段 `prompt` / `size` / `seconds`；该条目对应 `1920*1080` 高价档位。 |
+| `wan2.6-i2v:1280*720` | 阿里 wan2.6 | 阿里万象 wan2.6 图生视频；常见字段 `prompt` / `size` / `seconds`；支持首帧生视频；该条目对应 `1280*720` 低价档位。 |
+| `wan2.6-i2v:1920*1080` | 阿里 wan2.6 | 阿里万象 wan2.6 图生视频；常见字段 `prompt` / `size` / `seconds`；支持首帧生视频；该条目对应 `1920*1080` 高价档位。 |
+| `Vidu-q3-pro` | 国产视频模型 | Vidu q3-pro（基础模型）。 |
+| `Vidu-q3-turbo` | 国产视频模型 | Vidu q3-turbo（基础模型）。 |
+| `Kling-3.0` | 国产视频模型 | 可灵 3.0（基础模型）。 |
+| `Kling-3.0-Omni` | 国产视频模型 | 可灵 3.0 Omni（基础模型）。 |
+| `Hailuo-2.3` | 国产视频模型 | 海螺 2.3（基础模型）。 |
+| `Hailuo-2.3-fast` | 国产视频模型 | 海螺 2.3 fast（基础模型）。 |
+
+## 推荐阅读
+
+1. [Grok 视频概览](/api-reference/videos/grok/overview)
+2. [Veo 视频概览](/api-reference/videos/veo/overview)
+3. 如果你要做图生视频，先确认目标模型需要的是 `image`、`images`、`input_reference` 还是 `first_frame_image` / `last_frame_image`。
+4. 如果你明确是 Kling 官方格式接入，再看 `/kling/v1/videos/*` 这一组路由。

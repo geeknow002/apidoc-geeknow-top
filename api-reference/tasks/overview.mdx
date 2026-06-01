@@ -1,0 +1,15 @@
+---
+title: 任务管理概览
+description: 汇总任务查询与结果获取接口。
+---
+
+# 任务管理
+
+## 路由清单
+
+| Method | Path | 说明 |
+| --- | --- | --- |
+| `GET` | `/v1/videos/{task_id}` | 视频任务查询 |
+| `GET` | `/v1/videos/{task_id}/content` | 视频结果代理下载 |
+| `GET` | `/suno/fetch/{id}` | Suno 单任务查询 |
+| `POST` | `/suno/fetch` | Suno 批量查询 |

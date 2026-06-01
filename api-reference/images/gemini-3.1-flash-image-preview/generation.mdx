@@ -1,0 +1,153 @@
+---
+title: gemini-3.1-flash-image-preview 生图 API
+description: 使用 `POST /v1beta/models/gemini-3.1-flash-image-preview:generateContent` 调用 Gemini 官方格式生图接口。
+api: "POST /v1beta/models/{model}:generateContent"
+---
+
+# gemini-3.1-flash-image-preview 生图 API
+
+这个模型使用 Gemini 官方 `generateContent` 格式生图，适合直接复用 `contents` / `parts` 结构。
+
+- 路径为 `POST /v1beta/models/{model}:generateContent`。
+- `model` 固定传 `gemini-3.1-flash-image-preview`。
+- 文生图和图生图都使用同一套 `contents[].parts[]`。
+- 这个模型会实际回落为 `1K`；即使请求中传 `2K`，最终也会按 `1K` 处理。
+- 返回里既可能直接给 `inlineData.data` Base64，也可能给图片 URL。
+
+## 先看懂图生图
+
+Gemini 这里的图生图，不是换一条 API，而是继续用 `generateContent`：
+
+- 用 `parts[].text` 写提示词
+- 用 `parts[].inlineData` 塞参考图
+
+模型会把这两类输入一起看，所以它能做“参考图 + 提示词”的组合生成。
+
+## 图生图最小示例
+
+```json
+{
+  "contents": [
+    {
+      "role": "user",
+      "parts": [
+        { "text": "根据参考图做一张同主题但更简洁的信息海报" },
+        {
+          "inlineData": {
+            "mimeType": "image/png",
+            "data": "BASE64_IMAGE"
+          }
+        }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "responseModalities": ["TEXT", "IMAGE"],
+    "imageConfig": {
+      "aspectRatio": "4:3",
+      "imageSize": "1K"
+    }
+  }
+}
+```
+
+## 方法与路径
+
+```http
+POST /v1beta/models/gemini-3.1-flash-image-preview:generateContent
+```
+
+## 请求示例
+
+```bash
+curl -X POST https://td.geeknow.top/v1beta/models/gemini-3.1-flash-image-preview:generateContent \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          { "text": "一张极简科技海报，白底，蓝黑线条，信息图风格" }
+        ]
+      }
+    ],
+    "generationConfig": {
+      "responseModalities": ["TEXT", "IMAGE"],
+      "imageConfig": {
+        "aspectRatio": "4:3",
+        "imageSize": "1K"
+      }
+    }
+  }'
+```
+
+## 关键字段
+
+| 字段 | 说明 |
+| --- | --- |
+| `contents[].parts[].text` | 文本提示词 |
+| `contents[].parts[].inlineData` | 参考图输入 |
+| `generationConfig.responseModalities` | 建议使用 `["IMAGE", "TEXT"]` |
+| `generationConfig.imageConfig.aspectRatio` | 图片比例 |
+| `generationConfig.imageConfig.imageSize` | 图片清晰度 |
+
+## 图生图字段解释
+
+| 字段 | 图生图里的作用 |
+| --- | --- |
+| `parts[].text` | 告诉模型要输出什么样的图 |
+| `parts[].inlineData.mimeType` | 声明参考图类型 |
+| `parts[].inlineData.data` | 参考图 Base64 内容 |
+| `imageConfig.aspectRatio` | 控制出图比例 |
+| `imageConfig.imageSize` | 控制出图清晰度 |
+
+## 返回后怎么看图片
+
+通常看这里：
+
+- `candidates[0].content.parts[].inlineData.data`
+
+这个字段可能是：
+
+1. Base64 图片数据
+2. 图片 URL
+
+<Info>
+这个模型会把请求中的 `imageSize` 按 `1K` 处理；即使请求或示例中填写 `2K`，最终也会回落为 `1K`。
+</Info>
+
+## 响应示例
+
+```json
+{
+  "candidates": [
+    {
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "inlineData": {
+              "mimeType": "image/png",
+              "data": "BASE64_OR_URL"
+            }
+          }
+        ]
+      },
+      "finishReason": "STOP"
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 110,
+    "candidatesTokenCount": 320,
+    "totalTokenCount": 430
+  }
+}
+```
+
+## 相关接口
+
+- [图像模型支持矩阵](/api-reference/images/model-matrix)
+- [gemini-3-pro-image-preview 生图 API](/api-reference/images/gemini-3-pro-image-preview/generation)
+- [gemini-2.5-flash-image-preview 生图 API](/api-reference/images/gemini-2.5-flash-image-preview/generation)
