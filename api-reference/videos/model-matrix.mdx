@@ -14,6 +14,7 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 | Sora | `sora-2` | [概览](/api-reference/videos/sora/overview) | `/v1/videos` | 文生视频、首帧生视频 | JSON `input_reference` |
 | Veo | `veo_3_1`、`veo_3_1-fast` | [概览](/api-reference/videos/veo/overview) | `/v1/videos` | 文生视频、首尾帧、参考生视频 | JSON `input_reference` |
 | Grok Video | `grok-video-3`、`grok-video-3-pro`、`grok-video-3-max` | [概览](/api-reference/videos/grok/overview) | `/v1/videos` | 文生视频、首帧生视频、首尾帧、参考生视频 | multipart `input_reference` |
+| Omni | `omni-fast`、`omni-fast-v2v` | [概览](/api-reference/videos/omni/overview) | `/v1/videos` | 文生视频、图生视频、首尾帧、多参考图、参考视频编辑 | JSON `first_image_url` / `last_image_url` / `images` / `video` |
 | 国产视频模型（AIGC） | `Vidu-*`、`Kling-*`、`GV-*`、`OS-*`、`Hunyuan-*`、`Mingmou-*`、`Hailuo-*`、`SV-*`、`JV-*` | [概览](/api-reference/videos/aigc/overview) | `/v1/videos` | 文生、图生、参考图、参考视频、首尾帧、动作控制、数字人、对口型、模板特效 | JSON `image` / `images` / `input_reference` / `metadata` |
 | Seedance-2 | `seedance-2.0-lite`、`seedance-2.0-pro`、`seedance-2.0-fast` | [概览](/api-reference/videos/seedance-2/overview) | `/v1/videos` | 文生视频、首帧、尾帧、参考图、参考视频、参考音频 | JSON 或仅 URL 的 multipart |
 
@@ -64,6 +65,17 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 | 参考图 | 走 multipart `input_reference`，支持多张 |
 | 时长规则 | `grok-video-3-pro` 固定 `10s`，`grok-video-3-max` 固定 `15s` |
 | 特殊模式 | 额外支持“首帧生视频 + 参考图”的组合模式 |
+
+### Omni
+
+| 项目 | 说明 |
+| --- | --- |
+| 模型示例 | `omni-fast`、`omni-fast-v2v` |
+| 推荐入口 | `POST /v1/videos` |
+| 文档页面 | [Omni 视频模型概览](/api-reference/videos/omni/overview) |
+| `omni-fast` | JSON；支持文生、首帧图生、首尾帧、多参考图；`images` 最多 5 张 |
+| `omni-fast-v2v` | 在 `omni-fast` 基础上支持 `video` / `video_url` / `input_video` 参考视频，最大 15MB |
+| 下载建议 | 任务完成后优先使用 `GET /v1/videos/{task_id}/content` 下载 MP4 |
 
 ### Seedance-2
 
@@ -142,6 +154,7 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 | Sora | 支持 | 支持 | 部分场景依赖上游 | 部分场景通过多图参考实现 | 支持 |
 | Veo | 支持 | 可通过参考图实现 | 支持 | 支持 | 依赖上游 |
 | Grok Video | 支持 | 支持 | 支持 | 支持 | 依赖上游 |
+| Omni | 支持 | 支持 | 支持 | `omni-fast` 支持参考图；`omni-fast-v2v` 支持参考视频 | 模型相关 |
 | 豆包 Seedance | 支持 | 支持 | 支持 | 不推荐 | 依赖上游 |
 | 阿里 wan2.6 | 支持 | `i2v` 支持 | 依赖上游 | 依赖上游 | 依赖上游 |
 | Vidu | 支持 | 支持 | 支持 | 支持 | 依赖上游 |
@@ -162,12 +175,15 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 | `Vidu-q3-turbo` | 国产视频模型 | Vidu q3-turbo（基础模型）。 |
 | `Kling-3.0` | 国产视频模型 | 可灵 3.0（基础模型）。 |
 | `Kling-3.0-Omni` | 国产视频模型 | 可灵 3.0 Omni（基础模型）。 |
+| `omni-fast` | Omni | 文生视频、首帧图生视频、首尾帧和多参考图视频；JSON 请求；参考图最多 5 张；时长 4 到 30 秒。 |
+| `omni-fast-v2v` | Omni | 在 `omni-fast` 基础上额外支持参考视频编辑或延长；参考视频字段为 `video` / `video_url` / `input_video`，最大 15MB。 |
 | `Hailuo-2.3` | 国产视频模型 | 海螺 2.3（基础模型）。 |
 | `Hailuo-2.3-fast` | 国产视频模型 | 海螺 2.3 fast（基础模型）。 |
 
 ## 推荐阅读
 
 1. [Grok 视频概览](/api-reference/videos/grok/overview)
-2. [Veo 视频概览](/api-reference/videos/veo/overview)
-3. 如果你要做图生视频，先确认目标模型需要的是 `image`、`images`、`input_reference` 还是 `first_frame_image` / `last_frame_image`。
-4. 如果你明确是 Kling 官方格式接入，再看 `/kling/v1/videos/*` 这一组路由。
+2. [Omni 视频模型概览](/api-reference/videos/omni/overview)
+3. [Veo 视频概览](/api-reference/videos/veo/overview)
+4. 如果你要做图生视频，先确认目标模型需要的是 `image`、`images`、`input_reference` 还是 `first_frame_image` / `last_frame_image`。
+5. 如果你明确是 Kling 官方格式接入，再看 `/kling/v1/videos/*` 这一组路由。
