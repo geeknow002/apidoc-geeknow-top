@@ -5,10 +5,10 @@ description: 汇总特惠渠道系列视频模型的创建任务、查询任务�
 
 # 特惠渠道系列
 
-特惠渠道系列当前包含 `manxue-2` 视频模型。该模型通过 `/v1/videos` 创建异步任务，通过 `/v1/videos/{id}` 查询任务状态和结果。
+特惠渠道系列当前包含 `manxue-2.0` 视频模型。该模型通过 `/v1/videos` 创建异步任务，通过 `/v1/videos/{id}` 查询任务状态和结果。
 
 <CardGroup cols={2}>
-  <Card title="manxue-2 创建任务" icon="clapperboard" href="/api-reference/videos/special-offer/generation">
+  <Card title="manxue-2.0 创建任务" icon="clapperboard" href="/api-reference/videos/special-offer/generation">
     使用 JSON 请求，支持 480P / 720P 与 4-15 秒。
   </Card>
   <Card title="查询视频任务" icon="hourglass" href="/api-reference/videos/special-offer/query">
@@ -20,11 +20,11 @@ description: 汇总特惠渠道系列视频模型的创建任务、查询任务�
 
 | 模型 | 可用 `model` | 请求格式 | 时长 | 清晰度 | 参考图 |
 | --- | --- | --- | --- | --- | --- |
-| manxue-2 | `manxue-2` | JSON | `4` 到 `15` 秒 | `480P`、`720P` | 图片 URL 放入 `content[].image_url.url` |
+| manxue-2.0 | `manxue-2.0` | JSON | `4` 到 `15` 秒 | `480P`、`720P` | 图片 URL 放入 `content[].image_url.url` |
 
-## manxue-2 请求特点
+## manxue-2.0 请求特点
 
-- `model` 固定传 `manxue-2`。
+- `model` 固定传 `manxue-2.0`。
 - 使用 `application/json` 提交。
 - 时长支持 `4` 到 `15` 秒。
 - 清晰度支持 `480P`、`720P`。
@@ -44,5 +44,5 @@ GET /v1/videos/{id}
 
 ## 相关页面
 
-- [manxue-2 创建任务](./generation)
+- [manxue-2.0 创建任务](./generation)
 - [查询视频任务](./query)
