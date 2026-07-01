@@ -1,29 +1,27 @@
 ---
-title: gemini-2.5-flash-image-preview 生图 API
-description: 使用 `POST /v1beta/models/gemini-2.5-flash-image-preview:generateContent` 调用 Gemini 官方格式生图接口。
+title: gemini-3.1-flash-lite-image 生图 API
+description: 使用 `POST /v1beta/models/gemini-3.1-flash-lite-image:generateContent` 调用 Gemini 官方格式生图接口。
 api: "POST /v1beta/models/{model}:generateContent"
 ---
 
-# gemini-2.5-flash-image-preview 生图 API
+# gemini-3.1-flash-lite-image 生图 API
 
 这个模型使用 Gemini 官方 `generateContent` 格式生图，适合直接复用 `contents` / `parts` 结构。
 
 - 路径为 `POST /v1beta/models/{model}:generateContent`。
-- `model` 固定传 `gemini-2.5-flash-image-preview`。
+- `model` 固定传 `gemini-3.1-flash-lite-image`。
 - 文生图和图生图都使用同一套 `contents[].parts[]`。
 - 这个模型会实际回落为 `1K`；即使请求中传 `2K`，最终也会按 `1K` 处理。
 - 返回里既可能直接给 `inlineData.data` Base64，也可能给图片 URL。
 
 ## 先看懂图生图
 
-Gemini 这里没有单独的“编辑接口”。图生图就是把参考图直接作为输入拼进 `contents[].parts[]`。
+Gemini 这里的图生图，不是换一条 API，而是继续用 `generateContent`：
 
-最简单的理解是：
+- 用 `parts[].text` 写提示词
+- 用 `parts[].inlineData` 塞参考图
 
-- 文生图：`parts[]` 里只有文字
-- 图生图：`parts[]` 里有文字，也有图片
-
-也就是说，提示词和参考图是一起发给模型的。
+模型会把这两类输入一起看，所以它能做“参考图 + 提示词”的组合生成。
 
 ## 图生图最小示例
 
@@ -33,10 +31,10 @@ Gemini 这里没有单独的“编辑接口”。图生图就是把参考图直�
     {
       "role": "user",
       "parts": [
-        { "text": "参考这张图的构图，生成更适合宣传页的横版图片" },
+        { "text": "根据参考图做一张轻量快速版本的产品宣传图" },
         {
           "inlineData": {
-            "mimeType": "image/jpeg",
+            "mimeType": "image/png",
             "data": "BASE64_IMAGE"
           }
         }
@@ -46,7 +44,7 @@ Gemini 这里没有单独的“编辑接口”。图生图就是把参考图直�
   "generationConfig": {
     "responseModalities": ["TEXT", "IMAGE"],
     "imageConfig": {
-      "aspectRatio": "16:9",
+      "aspectRatio": "4:3",
       "imageSize": "1K"
     }
   }
@@ -56,13 +54,13 @@ Gemini 这里没有单独的“编辑接口”。图生图就是把参考图直�
 ## 方法与路径
 
 ```http
-POST /v1beta/models/gemini-2.5-flash-image-preview:generateContent
+POST /v1beta/models/gemini-3.1-flash-lite-image:generateContent
 ```
 
 ## 请求示例
 
 ```bash
-curl -X POST https://td.geeknow.top/v1beta/models/gemini-2.5-flash-image-preview:generateContent \
+curl -X POST https://td.geeknow.top/v1beta/models/gemini-3.1-flash-lite-image:generateContent \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
@@ -71,14 +69,14 @@ curl -X POST https://td.geeknow.top/v1beta/models/gemini-2.5-flash-image-preview
       {
         "role": "user",
         "parts": [
-          { "text": "一张轻快风格的产品宣传图，暖色调，适合社媒封面" }
+          { "text": "一张轻量快速生成的极简科技海报，白底，蓝黑线条，信息图风格" }
         ]
       }
     ],
     "generationConfig": {
       "responseModalities": ["TEXT", "IMAGE"],
       "imageConfig": {
-        "aspectRatio": "16:9",
+        "aspectRatio": "4:3",
         "imageSize": "1K"
       }
     }
@@ -95,15 +93,15 @@ curl -X POST https://td.geeknow.top/v1beta/models/gemini-2.5-flash-image-preview
 | `generationConfig.imageConfig.aspectRatio` | 图片比例 |
 | `generationConfig.imageConfig.imageSize` | 图片清晰度 |
 
-## 图生图到底看哪几个字段
+## 图生图字段解释
 
 | 字段 | 图生图里的作用 |
 | --- | --- |
-| `parts[].text` | 描述要生成什么、保留什么、改什么 |
-| `parts[].inlineData.mimeType` | 标记参考图格式 |
+| `parts[].text` | 告诉模型要输出什么样的图 |
+| `parts[].inlineData.mimeType` | 声明参考图类型 |
 | `parts[].inlineData.data` | 参考图 Base64 内容 |
-| `imageConfig.aspectRatio` | 最终出图比例 |
-| `imageConfig.imageSize` | 最终出图清晰度 |
+| `imageConfig.aspectRatio` | 控制出图比例 |
+| `imageConfig.imageSize` | 控制出图清晰度 |
 
 ## 返回后怎么看图片
 
@@ -141,16 +139,16 @@ curl -X POST https://td.geeknow.top/v1beta/models/gemini-2.5-flash-image-preview
     }
   ],
   "usageMetadata": {
-    "promptTokenCount": 100,
-    "candidatesTokenCount": 300,
-    "totalTokenCount": 400
+    "promptTokenCount": 110,
+    "candidatesTokenCount": 320,
+    "totalTokenCount": 430
   }
 }
 ```
 
 ## 异步调用
 
-`gemini-2.5-flash-image-preview` 也支持通过统一图像异步入口提交任务：
+`gemini-3.1-flash-lite-image` 也支持通过统一图像异步入口提交任务：
 
 ```http
 POST /v1/images/generations/async
@@ -161,8 +159,9 @@ POST /v1/images/generations/async
 ## 相关接口
 
 - [图像模型支持矩阵](/api-reference/images/model-matrix)
+- [Gemini 图像生成 API](/api-reference/images/gemini-image/generation)
 - [图像异步生成 API](/api-reference/images/gpt-image-async/generation)
 - [图像异步任务查询](/api-reference/images/gpt-image-async/query)
 - [gemini-3-pro-image-preview 生图 API](/api-reference/images/gemini-3-pro-image-preview/generation)
+- [gemini-2.5-flash-image-preview 生图 API](/api-reference/images/gemini-2.5-flash-image-preview/generation)
 - [gemini-3.1-flash-image-preview 生图 API](/api-reference/images/gemini-3.1-flash-image-preview/generation)
-- [gemini-3.1-flash-lite-image 生图 API](/api-reference/images/gemini-3.1-flash-lite-image/generation)
