@@ -9,7 +9,7 @@ api: "POST /v1/videos"
 Seedance 2.0 视频生成接口用于提交文生视频、首帧生视频、首尾帧生视频和参考素材生成任务。
 
 - 异步处理模式，提交成功后返回视频任务 ID。
-- 支持 `doubao-seedance-2-0-260128`、`doubao-seedance-2-0-fast-260128`；当前站点需先开通/定价。
+- 支持 `doubao-seedance-2-0-260128`、`doubao-seedance-2-0-fast-260128`。
 - 使用 `application/json` 提交；素材字段传公网 URL 或 `asset://{asset_id}`。
 - 支持首帧图、尾帧图、参考图、参考视频和参考音频 URL。
 - `last_image` 必须和 `first_image` 同时传入。
@@ -292,7 +292,7 @@ Authorization: Bearer YOUR_API_KEY
 ## Body
 
 <ParamField body="model" type="string" required>
-模型名称。支持标准档 `doubao-seedance-2-0-260128` 和 fast 档 `doubao-seedance-2-0-fast-260128`；当前站点需先开通/定价。
+模型名称。支持标准档 `doubao-seedance-2-0-260128` 和 fast 档 `doubao-seedance-2-0-fast-260128`。
 </ParamField>
 
 <ParamField body="prompt" type="string" required>
