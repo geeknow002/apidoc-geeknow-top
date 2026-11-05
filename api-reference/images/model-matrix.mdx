@@ -20,6 +20,8 @@ description: 汇总当前图像相关接口支持的模型家族、入口路由�
 | gpt-image-2-pro | `gpt-image-2-pro` | `/v1/images/generations` | JSON `image`，支持多张 Base64 | `url` 或 `b64_json` |
 | gpt-image-2.5-flare | `gpt-image-2.5-flare` | `/v1/images/generations` | JSON `image`，支持多张 Base64 | `url` 或 `b64_json` |
 | gpt-image-2.5-sunburst | `gpt-image-2.5-sunburst` | `/v1/images/generations` | JSON `image`，支持多张 Base64 | `url` 或 `b64_json` |
+| gpt-image-2.6-flare | `gpt-image-2.6-flare` | `/v1/images/generations` | JSON `image` 数组，使用 Base64 参考图 | `url` 或 `b64_json`；GIF 需检查文件格式与帧数 |
+| gpt-image-2.6-sunburst | `gpt-image-2.6-sunburst` | `/v1/images/generations` | JSON `image` 数组，使用 Base64 参考图 | `url` 或 `b64_json`；GIF 需检查文件格式与帧数 |
 | gpt-image-2-vip | `gpt-image-2-vip` | `/v1/images/generations` | JSON `image`，支持多张 Base64 | `url` 或 `b64_json` |
 | 图像异步生成 | `gpt-image-2`、`gpt-image-2-pro`、`gpt-image-2.5-flare`、`gpt-image-2.5-sunburst`、`gpt-image-2-vip`、Doubao Seedream、Gemini 图像模型 | `/v1/images/generations/async` + 查询接口 | JSON `image`，异步通道目前只接受公网 `http(s)` URL | 先返回任务对象，完成后查询返回结果对象 |
 | OpenAI OG / Gemini GG | `image2`、`image2-low`、`image2-medium`、`image2-high`、`image2-high-2k`、`GG-2.5`、`GG-3.0`、`GG-3.1`、`gg-3.1-4k` | `/v1/videos` + `/v1/videos/{task_id}` | `image` / `images` / `input_reference` | 先返回任务 ID，再查询 `output.file_infos[].file_url` |
@@ -102,6 +104,32 @@ description: 汇总当前图像相关接口支持的模型家族、入口路由�
 | 尺寸特点 | 支持全部基础尺寸以及 `2K`、`4K` 尺寸档位，详见下方尺寸表 |
 | 详细页面 | [gpt-image-2.5-sunburst 生成图像 API](/api-reference/images/gpt-image-2.5-sunburst/generation) |
 
+### gpt-image-2.6-flare
+
+| 项目 | 说明 |
+| --- | --- |
+| 推荐接口 | `POST /v1/images/generations`，同步返回结果 |
+| 模型名 | `gpt-image-2.6-flare` |
+| 请求风格 | 与 GPT Image 2 / 2.5 一致的 JSON；参考图使用 `image` 数组 |
+| 输出选择 | `output_format = png` 请求图片，`output_format = gif` 请求动图 |
+| GIF 建议配置 | `size: "auto"`、`quality: "medium"`、`frame_count: 9`、`frame_duration_ms: 200` |
+| GIF 尺寸 | 建议使用 `auto`，每帧尺寸由接口决定；固定尺寸可能返回单帧文件 |
+| 结果处理 | 下载后检查实际格式、帧数及动作变化，过滤附带的 PNG 分镜图，原样保存 GIF 字节 |
+| 详细页面 | [gpt-image-2.6-flare 生成图像 API](/api-reference/images/gpt-image-2.6-flare/generation) |
+
+### gpt-image-2.6-sunburst
+
+| 项目 | 说明 |
+| --- | --- |
+| 推荐接口 | `POST /v1/images/generations`，同步返回结果 |
+| 模型名 | `gpt-image-2.6-sunburst` |
+| 请求风格 | 与 GPT Image 2 / 2.5 一致的 JSON；参考图使用 `image` 数组 |
+| 输出选择 | `output_format = png` 请求图片，`output_format = gif` 请求动图 |
+| GIF 建议配置 | `size: "auto"`、`quality: "medium"`、`frame_count: 9`、`frame_duration_ms: 200` |
+| GIF 尺寸 | 建议使用 `auto`，每帧尺寸由接口决定；固定尺寸可能返回单帧文件 |
+| 结果处理 | URL 与 Content-Type 可能标为 PNG；应读取实际文件确认，不依赖响应声明的 `output_format` |
+| 详细页面 | [gpt-image-2.6-sunburst 生成图像 API](/api-reference/images/gpt-image-2.6-sunburst/generation) |
+
 ### gpt-image-2-vip
 
 | 项目 | 说明 |
@@ -182,6 +210,8 @@ description: 汇总当前图像相关接口支持的模型家族、入口路由�
 | 注意事项 | 这组模型的公共语义见 [OpenAI Images 兼容概览](/api-reference/images/gpt-image-1/overview)，适合做兼容接入 |
 
 ## 比例与尺寸
+
+GPT Image 2.6 的静态图尺寸示例见 [Flare 页面](/api-reference/images/gpt-image-2.6-flare/generation) 和 [Sunburst 页面](/api-reference/images/gpt-image-2.6-sunburst/generation)。GIF 建议使用 `auto`，实际每帧尺寸和比例由接口决定。固定尺寸可能返回单帧文件；如需固定画幅，可在生成多帧 GIF 后逐帧缩放并补边。
 
 ### 常见比例
 
@@ -291,9 +321,11 @@ description: 汇总当前图像相关接口支持的模型家族、入口路由�
 4. [gpt-image-2-pro 生成图像 API](/api-reference/images/gpt-image-2-pro/generation)
 5. [gpt-image-2.5-flare 生成图像 API](/api-reference/images/gpt-image-2.5-flare/generation)
 6. [gpt-image-2.5-sunburst 生成图像 API](/api-reference/images/gpt-image-2.5-sunburst/generation)
-7. [gpt-image-2-vip 生成图像 API](/api-reference/images/gpt-image-2-vip/generation)
-8. [图像异步生成 API](/api-reference/images/gpt-image-async/generation)
-9. [图像异步任务查询](/api-reference/images/gpt-image-async/query)
-10. [Doubao Seedream 生成图像 API](/api-reference/images/doubao-seedream/generation)
-11. [OpenAI Images 兼容概览](/api-reference/images/gpt-image-1/overview)
-12. [OpenAI Images 兼容图像编辑](/api-reference/images/gpt-image-1/edit)
+7. [gpt-image-2.6-flare 生成图像 API](/api-reference/images/gpt-image-2.6-flare/generation)
+8. [gpt-image-2.6-sunburst 生成图像 API](/api-reference/images/gpt-image-2.6-sunburst/generation)
+9. [gpt-image-2-vip 生成图像 API](/api-reference/images/gpt-image-2-vip/generation)
+10. [图像异步生成 API](/api-reference/images/gpt-image-async/generation)
+11. [图像异步任务查询](/api-reference/images/gpt-image-async/query)
+12. [Doubao Seedream 生成图像 API](/api-reference/images/doubao-seedream/generation)
+13. [OpenAI Images 兼容概览](/api-reference/images/gpt-image-1/overview)
+14. [OpenAI Images 兼容图像编辑](/api-reference/images/gpt-image-1/edit)

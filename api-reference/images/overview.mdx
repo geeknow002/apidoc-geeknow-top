@@ -1,6 +1,6 @@
 ---
 title: 图像系列概览
-description: 汇总图像生成、图像编辑、异步任务、素材上传，以及 OpenAI OG 与 Gemini GG 图像任务接入能力。
+description: 汇总图像生成、GPT Image 2.6 GIF 动图、图像编辑、异步任务、素材上传，以及 OpenAI OG 与 Gemini GG 图像任务接入能力。
 ---
 
 # 图像系列
@@ -25,6 +25,12 @@ description: 汇总图像生成、图像编辑、异步任务、素材上传，�
   </Card>
   <Card title="gpt-image-2.5-sunburst" icon="sparkles" href="/api-reference/images/gpt-image-2.5-sunburst/generation">
     `POST /v1/images/generations`，使用 `gpt-image-2.5-sunburst`，支持全部尺寸档位。
+  </Card>
+  <Card title="gpt-image-2.6-flare" icon="sparkles" href="/api-reference/images/gpt-image-2.6-flare/generation">
+    `POST /v1/images/generations`，生成图片或 GIF 动图，支持参考图输入。
+  </Card>
+  <Card title="gpt-image-2.6-sunburst" icon="sparkles" href="/api-reference/images/gpt-image-2.6-sunburst/generation">
+    `POST /v1/images/generations`，支持参考图输入，提供 GIF 示例与尺寸注意事项。
   </Card>
   <Card title="gpt-image-2-vip" icon="sparkles" href="/api-reference/images/gpt-image-2-vip/generation">
     `POST /v1/images/generations`，使用 `gpt-image-2-vip` 的 `1K`、`2K`、`4K` 尺寸表。
@@ -56,7 +62,7 @@ description: 汇总图像生成、图像编辑、异步任务、素材上传，�
 
 | Method | Path | 说明 |
 | --- | --- | --- |
-| `POST` | `/v1/images/generations` | 图像生成入口 |
+| `POST` | `/v1/images/generations` | 图像生成入口；GPT Image 2.6 可通过 `output_format: "gif"` 请求动图 |
 | `POST` | `/v1/images/generations/async` | 图像异步生成入口 |
 | `GET` | `/v1/images/generations/async/{taskId}` | 图像异步任务查询 |
 | `POST` | `/v1/videos` | OpenAI OG / Gemini GG 图像任务提交 |
@@ -84,14 +90,16 @@ description: 汇总图像生成、图像编辑、异步任务、素材上传，�
 3. [gpt-image-2-pro 生成图像 API](/api-reference/images/gpt-image-2-pro/generation)
 4. [gpt-image-2.5-flare 生成图像 API](/api-reference/images/gpt-image-2.5-flare/generation)
 5. [gpt-image-2.5-sunburst 生成图像 API](/api-reference/images/gpt-image-2.5-sunburst/generation)
-6. [gpt-image-2-vip 生成图像 API](/api-reference/images/gpt-image-2-vip/generation)
-7. [OpenAI 系列（OG）图像任务概览](/api-reference/images/openai-og/overview)
-8. [OpenAI 系列（OG）图像生成提交](/api-reference/images/openai-og/generation)
-9. [OpenAI 系列（OG）图像任务查询](/api-reference/images/openai-og/query)
-10. [Gemini 系列（GG）图像任务概览](/api-reference/images/gemini-gg/overview)
-11. [Gemini 系列（GG）图像生成提交](/api-reference/images/gemini-gg/generation)
-12. [Gemini 系列（GG）图像任务查询](/api-reference/images/gemini-gg/query)
-13. [Gemini 图像生成 API](/api-reference/images/gemini-image/generation)
-14. [图像异步生成 API](/api-reference/images/gpt-image-async/generation)
-15. [Doubao Seedream 生成图像 API](/api-reference/images/doubao-seedream/generation)
-16. [OpenAI Images 兼容概览](/api-reference/images/gpt-image-1/overview)
+6. [gpt-image-2.6-flare 生成图像 API](/api-reference/images/gpt-image-2.6-flare/generation)
+7. [gpt-image-2.6-sunburst 生成图像 API](/api-reference/images/gpt-image-2.6-sunburst/generation)
+8. [gpt-image-2-vip 生成图像 API](/api-reference/images/gpt-image-2-vip/generation)
+9. [OpenAI 系列（OG）图像任务概览](/api-reference/images/openai-og/overview)
+10. [OpenAI 系列（OG）图像生成提交](/api-reference/images/openai-og/generation)
+11. [OpenAI 系列（OG）图像任务查询](/api-reference/images/openai-og/query)
+12. [Gemini 系列（GG）图像任务概览](/api-reference/images/gemini-gg/overview)
+13. [Gemini 系列（GG）图像生成提交](/api-reference/images/gemini-gg/generation)
+14. [Gemini 系列（GG）图像任务查询](/api-reference/images/gemini-gg/query)
+15. [Gemini 图像生成 API](/api-reference/images/gemini-image/generation)
+16. [图像异步生成 API](/api-reference/images/gpt-image-async/generation)
+17. [Doubao Seedream 生成图像 API](/api-reference/images/doubao-seedream/generation)
+18. [OpenAI Images 兼容概览](/api-reference/images/gpt-image-1/overview)

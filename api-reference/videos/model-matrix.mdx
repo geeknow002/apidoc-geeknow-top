@@ -36,7 +36,7 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 | 文档页面 | [Muse 视频概览](/api-reference/videos/muse/overview) |
 | 请求格式 | `application/json` |
 | 常见字段 | `model`、`prompt`、`duration`、`seconds`、`size`、`image`、`images`、`mode` |
-| 时长规则 | `10` 或 `15` 秒；同时提交 `duration` 整数与 `seconds` 字符串，数值保持一致；实际时长以生成结果为准 |
+| 时长规则 | `10`、`15` 或 `30` 秒；同时提交 `duration` 整数与 `seconds` 字符串，数值保持一致；实际时长以生成结果为准 |
 | 画幅比例 | `size` 支持 `16:9`、`9:16`、`1:1`，不表示清晰度或像素尺寸 |
 | 首帧图片 | 可选 `image`，只传一个公网图片 URL；本地图片先上传，不传 Base64 data URI |
 | 多图参考 | 非空 `images` URL 数组 + `mode: "i2v"`；第一张作为起始画面，其余作为主体、场景和风格参考；不接收 data URI 或 `asset://` |
@@ -264,7 +264,7 @@ description: 汇总当前视频模型系列的推荐入口、生成模式、参�
 
 | `model` | 归属 | 说明 |
 | --- | --- | --- |
-| `muse-video` | Muse | JSON 请求；时长为 10 或 15 秒，同时传 `duration` 整数与 `seconds` 字符串；`size` 传 `16:9`、`9:16` 或 `1:1`；首帧用 `image`，多图参考用 `images` + `mode: "i2v"`。 |
+| `muse-video` | Muse | JSON 请求；时长为 10、15 或 30 秒，同时传 `duration` 整数与 `seconds` 字符串；`size` 传 `16:9`、`9:16` 或 `1:1`；首帧用 `image`，多图参考用 `images` + `mode: "i2v"`。 |
 | `manxue-2.0` | 特惠渠道系列 | JSON 请求；`seconds` 支持 `4` 到 `15` 秒；`resolution` 支持 `480P`、`720P`；参考图通过 `content[].image_url.url` 传入，参考音频通过 `content[].audio_url.url` 传入。 |
 | `manxue-2.5` | manxue-2.5 | JSON 请求；仅支持参考生视频；`seconds` 仅支持 `30` 秒；`ratio` 支持 `1:1`、`3:4`、`4:3`、`9:16`、`16:9`、`21:9`；参考图通过必填的 `images` 数组传入，最多 `30` 张。 |
 | `mini-2.0` | mini-2.0 | JSON 请求；`duration` 支持 `4` 到 `15` 秒；`ratio` 仅支持 `16:9` / `9:16`；`resolution` 固定为 `480p`；参考图通过可选的 `images` 数组传入，最多 `9` 张。 |

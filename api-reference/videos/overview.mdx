@@ -12,7 +12,7 @@ description: 汇总按模型系列划分的视频接口文档。
     按模型家族查看视频能力、推荐入口、参考图传递方式和固定时长规则。
   </Card>
   <Card title="Muse 视频" icon="sparkles" href="/api-reference/videos/muse/overview">
-    `muse-video`，支持文生、首帧和多图参考；时长为 10 或 15 秒，同时提交 `duration` 整数和 `seconds` 字符串。
+    `muse-video`，支持文生、首帧和多图参考；时长为 10、15 或 30 秒，同时提交 `duration` 整数和 `seconds` 字符串。
   </Card>
   <Card title="MiniMax H3" icon="sparkles" href="/api-reference/videos/minimax-h3/overview">
     使用 `content[]` 提交文生、关键帧和参考素材视频；输出固定为 `768P`，时长支持 1-15 秒。
@@ -62,7 +62,7 @@ description: 汇总按模型系列划分的视频接口文档。
 
 | 模型系列 | 页面 | 说明 |
 | --- | --- | --- |
-| Muse | [概览](/api-reference/videos/muse/overview) | `muse-video`；支持文生、首帧和多图参考；时长为 10 或 15 秒，同时传 `duration` 和 `seconds`；多图参考使用 `images` + `mode: "i2v"` |
+| Muse | [概览](/api-reference/videos/muse/overview) | `muse-video`；支持文生、首帧和多图参考；时长为 10、15 或 30 秒，同时传 `duration` 和 `seconds`；多图参考使用 `images` + `mode: "i2v"` |
 | MiniMax H3 | [概览](/api-reference/videos/minimax-h3/overview) | JSON `content[]` 请求；模型固定为 `MiniMax-H3`，输出 `768P`，支持文生、关键帧、参考图片、参考视频和参考音频 |
 | manxue-2.5 | [概览](/api-reference/videos/manxue-2.5/overview) | JSON 请求；仅支持参考生视频；使用 `seconds`、`ratio` 和 `images` 数组 |
 | mini-2.0 | [概览](/api-reference/videos/mini-2.0/overview) | JSON 请求；使用 `duration`、`ratio`、固定 `resolution: "480p"` 和可选 `images` 数组 |

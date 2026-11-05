@@ -1,0 +1,360 @@
+---
+title: gpt-image-2.6-sunburst 生成图像 API
+description: 使用 JSON 调用 gpt-image-2.6-sunburst 生成图片或 GIF，包含参考图、动图参数、尺寸设置和结果处理。
+api: "POST /v1/images/generations"
+---
+
+# gpt-image-2.6-sunburst 生成图像 API
+
+`gpt-image-2.6-sunburst` 使用与 `gpt-image-2`、`gpt-image-2.5-sunburst` 一致的 JSON 请求结构，通过 `output_format` 选择图片或 GIF 动图，支持参考图输入。
+
+- 请求路径为 `POST /v1/images/generations`，同步返回结果。
+- 静态图片传 `output_format: "png"`；动图传 `output_format: "gif"`。
+- 参考图编码为纯 Base64 字符串，放在 JSON `image` 数组中。
+- 动图建议先使用 `size: "auto"`、`frame_count: 9`、`frame_duration_ms: 200`。
+- 下载后检查文件实际格式和帧数，再判断是否生成了有效动图。
+
+## 方法与路径
+
+```http
+POST /v1/images/generations
+```
+
+## 请求示例
+
+以下示例生成静态图片。图生图在相同请求中增加 `image` 数组即可。
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://td.geeknow.top/v1/images/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2.6-sunburst",
+    "prompt": "一张雪夜小镇插画，暖色窗灯，清晰细节",
+    "n": 1,
+    "size": "1536x1024",
+    "quality": "medium",
+    "output_format": "png",
+    "response_format": "url"
+  }'
+```
+
+```python Python
+import requests
+
+resp = requests.post(
+    "https://td.geeknow.top/v1/images/generations",
+    headers={
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json",
+    },
+    json={
+        "model": "gpt-image-2.6-sunburst",
+        "prompt": "一张雪夜小镇插画，暖色窗灯，清晰细节",
+        "n": 1,
+        "size": "1536x1024",
+        "quality": "medium",
+        "output_format": "png",
+        "response_format": "url",
+    },
+    timeout=(30, 300),
+)
+resp.raise_for_status()
+print(resp.json())
+```
+
+```javascript JavaScript
+const response = await fetch("https://td.geeknow.top/v1/images/generations", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-image-2.6-sunburst",
+    prompt: "一张雪夜小镇插画，暖色窗灯，清晰细节",
+    n: 1,
+    size: "1536x1024",
+    quality: "medium",
+    output_format: "png",
+    response_format: "url",
+  }),
+});
+
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+console.log(await response.json());
+```
+
+</CodeGroup>
+
+## 参考图生成 GIF
+
+准备本地 `reference.png`，将图片字节编码成纯 Base64 后放入 `image` 数组。以下示例需要 Python 的 `requests` 包，返回值保存为 `result`，可继续使用下文的 GIF 校验代码。
+
+```python
+import base64
+from pathlib import Path
+import requests
+
+reference = base64.b64encode(Path("reference.png").read_bytes()).decode("ascii")
+resp = requests.post(
+    "https://td.geeknow.top/v1/images/generations",
+    headers={
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json",
+    },
+    json={
+        "model": "gpt-image-2.6-sunburst",
+        "prompt": "根据参考图创建循环播放的 GIF 动图。先提升角色清晰度，再让角色微笑、举起双手并开心地小跳，最后回到初始姿势。包含9个连续且不同的动作帧，保持角色外观和背景一致。",
+        "image": [reference],
+        "n": 1,
+        "size": "auto",
+        "quality": "medium",
+        "output_format": "gif",
+        "frame_count": 9,
+        "frame_duration_ms": 200,
+        "response_format": "url",
+    },
+    timeout=(30, 300),
+)
+resp.raise_for_status()
+result = resp.json()
+print(result)
+```
+
+提示词应明确描述 GIF、连续动作和循环方式，例如“雪花持续从上向下飘落，保持人物不变，生成连续循环的 GIF”。
+
+## 响应示例
+
+GIF 请求可能同时返回动图和静态分镜图，即使 `n` 为 `1`，`data` 也可能包含多个条目。
+
+<ResponseExample>
+
+```json 200 - 图片
+{
+  "created": 1793853810,
+  "data": [
+    {
+      "url": "https://example.com/results/image.png",
+      "revised_prompt": "一张雪夜小镇插画，暖色窗灯，清晰细节"
+    }
+  ],
+  "output_format": "png",
+  "quality": "medium",
+  "size": "1536x1024"
+}
+```
+
+```json 200 - GIF 与静态分镜图
+{
+  "created": 1793853810,
+  "background": "opaque",
+  "data": [
+    {
+      "url": "https://example.com/results/animation.png",
+      "revised_prompt": "根据参考图创建循环播放的 GIF 动图"
+    },
+    {
+      "url": "https://example.com/results/storyboard.png",
+      "revised_prompt": "根据参考图创建循环播放的 GIF 动图"
+    }
+  ],
+  "output_format": "gif",
+  "quality": "medium",
+  "size": "auto"
+}
+```
+
+```json 502 - 生成或存储失败
+{
+  "error": {
+    "message": "The image generation tool encountered an error. Please try again.",
+    "type": "server_error",
+    "param": "",
+    "code": "image_storage_failed"
+  }
+}
+```
+
+</ResponseExample>
+
+## 认证
+
+```http
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+```
+
+## Body
+
+<ParamField body="model" type="string" required>
+固定传 `gpt-image-2.6-sunburst`。
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+生成提示词。动图应明确描述 GIF、主体动作、连续变化和循环方式；参考图的用途也在提示词中说明。
+</ParamField>
+
+<ParamField body="image" type="array<string>">
+可选参考图数组，将图片字节编码为纯 Base64 字符串后传入。省略该字段时为文生图。
+</ParamField>
+
+<ParamField body="n" type="integer">
+生成数量，示例显式传 `1`。GIF 响应可能额外包含静态分镜图，不要将 `data` 条目数直接当成动图数量。
+</ParamField>
+
+<ParamField body="size" type="string">
+输出尺寸，使用 `WxH` 写法，例如 `1024x1024`、`1536x1024`、`1024x1536`。GIF 建议传 `auto`，由接口决定每帧宽高，不保证固定比例。
+</ParamField>
+
+<ParamField body="quality" type="string">
+质量等级：`low`、`medium`、`high`、`xhigh`、`max`、`auto`。GIF 示例使用 `medium`。
+</ParamField>
+
+<ParamField body="output_format" type="string">
+文件编码格式。本页使用 `png` 生成图片、`gif` 请求动图。响应中的同名字段不能代替文件内容校验。
+</ParamField>
+
+<ParamField body="response_format" type="string">
+结果返回方式：`url` 返回文件地址，`b64_json` 返回 Base64 文件数据；与文件编码 `output_format` 含义不同。GIF 建议使用 `url`。
+</ParamField>
+
+<ParamField body="frame_count" type="integer">
+请求的动画帧数，仅在 `output_format = gif` 时传入。范围为 `2` 到 `64`，默认 `9`；实际帧数以返回文件为准。
+</ParamField>
+
+<ParamField body="frame_duration_ms" type="integer">
+请求的每帧时长，单位毫秒，仅用于 GIF。范围为 `20` 到 `2000`，按 `10ms` 取整，默认 `200`；实际播放时长以返回文件为准。
+</ParamField>
+
+## 尺寸与比例
+
+### 静态图片
+
+`size` 填实际像素尺寸，不填 `16:9`、`2K` 这类比例或档位名称。常用配置如下：
+
+| 比例 | `size` 示例 |
+| --- | --- |
+| `1:1` | `1024x1024` |
+| `3:2` | `1536x1024` |
+| `2:3` | `1024x1536` |
+| `16:9` | `1536x864` |
+| `9:16` | `864x1536` |
+
+### GIF 动图
+
+GIF 建议使用 `size: "auto"`，由接口根据生成内容决定每帧尺寸。`auto` 不对应固定比例，也不表示沿用参考图的尺寸。
+
+指定固定 `WxH` 尺寸时可能返回单帧文件。如需固定画幅，可先生成多帧 GIF，再逐帧等比缩放并补边到目标尺寸，同时保留全部帧、每帧时长和循环信息。
+
+<Warning>
+HTTP `200` 和响应中的 `output_format: "gif"` 不代表文件一定包含动画。下载后应检查实际格式、帧数和帧间变化，排除 PNG、单帧 GIF 和内容相同的重复帧。
+</Warning>
+
+## 下载与校验 GIF
+
+接口可能把真实 GIF 的 URL 后缀和 HTTP `Content-Type` 都标成 PNG。应遍历 `data`，下载或解码后检查实际格式，选择多帧 GIF，并忽略附带的静态分镜图。
+
+下面代码接在前面的参考图请求示例之后使用，需要额外安装 `Pillow`。它直接保存原始字节，避免重新编码时只保留第一帧。
+
+```python
+from io import BytesIO
+from PIL import Image
+
+saved_path = None
+candidate_errors = []
+for index, item in enumerate(result.get("data") or []):
+    if not isinstance(item, dict):
+        continue
+    try:
+        if item.get("b64_json"):
+            raw = base64.b64decode(item["b64_json"])
+        elif item.get("url"):
+            # 下载结果文件时，不向文件服务器转发 API Key。
+            download = requests.get(item["url"], timeout=(30, 120))
+            download.raise_for_status()
+            raw = download.content
+        else:
+            continue
+
+        with Image.open(BytesIO(raw)) as image:
+            if image.format != "GIF" or getattr(image, "n_frames", 1) <= 1:
+                continue
+            durations = []
+            distinct_frames = set()
+            for frame_index in range(image.n_frames):
+                image.seek(frame_index)
+                durations.append(image.info.get("duration", 0))
+                distinct_frames.add(image.convert("RGBA").tobytes())
+            if len(distinct_frames) <= 1:
+                continue
+            print("尺寸:", image.size, "帧数:", image.n_frames,
+                  "总时长(ms):", sum(durations), "循环:", image.info.get("loop"))
+
+        saved_path = Path("result.gif")
+        saved_path.write_bytes(raw)
+        print("已保存:", saved_path)
+        break
+    except (requests.RequestException, OSError, ValueError) as exc:
+        candidate_errors.append(f"结果 {index + 1}: {exc}")
+
+if saved_path is None:
+    detail = "; ".join(candidate_errors) or "返回结果没有包含不同动作帧的多帧 GIF"
+    raise RuntimeError(f"未取得有效 GIF 动图：{detail}")
+```
+
+## Response
+
+<ResponseField name="created" type="integer">
+生成时间戳。
+</ResponseField>
+
+<ResponseField name="data" type="array<object>">
+结果数组。GIF 请求可能包含动图和静态分镜图，应根据文件内容筛选，不依赖条目顺序。
+</ResponseField>
+
+<ResponseField name="data[].url" type="string">
+结果文件地址。后缀为 `.png` 的链接也可能返回真正的 GIF。
+</ResponseField>
+
+<ResponseField name="data[].b64_json" type="string">
+以 Base64 形式返回的文件数据。解码后仍需检查格式和帧数。
+</ResponseField>
+
+<ResponseField name="data[].revised_prompt" type="string">
+生成结果对应的提示词，可能与原提示词相同。
+</ResponseField>
+
+<ResponseField name="output_format" type="string">
+响应声明的输出格式。不能保证实际文件编码或动画帧数与之匹配。
+</ResponseField>
+
+<ResponseField name="size" type="string">
+响应中的尺寸字段可能仍为 `auto`；实际宽高需要读取文件。
+</ResponseField>
+
+<ResponseField name="quality" type="string">
+响应记录的质量等级，例如 `medium`。
+</ResponseField>
+
+<ResponseField name="usage" type="object">
+部分响应包含 `input_tokens`、`output_tokens`、`total_tokens` 及其明细，以实际返回为准。
+</ResponseField>
+
+## 常见问题
+
+| 现象 | 含义与处理 |
+| --- | --- |
+| HTTP `200`，实际为 PNG 或单帧 GIF | 本次未取得有效动图。提示词明确写出 GIF、连续动作和循环要求后重新验证；不要把静态图标记为动画成功 |
+| HTTP `502`，`code: image_storage_failed` | 生成或存储失败，未返回可用结果；可稍后重试，并设置重试次数上限 |
+| URL 以 `.png` 结尾，实际为多帧 GIF | 以解码出的文件类型为准，将原始字节保存为 `.gif` |
+| 下载连接中断，但已有结果 URL | 保留 URL，重试下载已有文件，避免重复提交生成请求 |
+
+## 相关页面
+
+- [图像模型支持矩阵](/api-reference/images/model-matrix)
+- [gpt-image-2.6-flare 生成图像 API](/api-reference/images/gpt-image-2.6-flare/generation)
+- [gpt-image-2.5-sunburst 生成图像 API](/api-reference/images/gpt-image-2.5-sunburst/generation)
+- [图像系列概览](/api-reference/images/overview)

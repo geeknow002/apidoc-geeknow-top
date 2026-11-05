@@ -8,7 +8,7 @@ api: "POST /v1/videos"
 
 `muse-video` 使用 `application/json` 提交异步视频任务。基础字段为 `model`、`prompt`、`duration`、`seconds` 和 `size`。首帧生视频追加单个 `image` URL；多图参考使用 `images` URL 数组，并传 `mode: "i2v"`。
 
-视频时长选择 `10` 或 `15` 秒。`duration` 使用整数，`seconds` 使用字符串，必须同时提交且数值一致。
+视频时长选择 `10`、`15` 或 `30` 秒。`duration` 使用整数，`seconds` 使用字符串，必须同时提交且数值一致。
 
 ## 方法与路径
 
@@ -49,8 +49,8 @@ curl -sS -X POST https://td.geeknow.top/v1/videos \
   -d '{
     "model": "muse-video",
     "prompt": "以图片为第一帧，让人物自然转身，镜头缓慢向前推进",
-    "duration": 10,
-    "seconds": "10",
+    "duration": 15,
+    "seconds": "15",
     "size": "9:16",
     "image": "https://example.com/assets/first-frame.png"
   }'
@@ -63,8 +63,8 @@ curl -sS -X POST https://td.geeknow.top/v1/videos \
   -d '{
     "model": "muse-video",
     "prompt": "以第一张图为起始画面，保持人物外观，并结合第二张图的场景与色彩风格，让人物自然转身",
-    "duration": 15,
-    "seconds": "15",
+    "duration": 30,
+    "seconds": "30",
     "size": "16:9",
     "mode": "i2v",
     "images": [
@@ -86,8 +86,8 @@ response = requests.post(
     json={
         "model": "muse-video",
         "prompt": "以第一张产品图为起始画面，参考第二张图的场景，镜头缓慢环绕产品",
-        "duration": 15,
-        "seconds": "15",
+        "duration": 30,
+        "seconds": "30",
         "size": "1:1",
         "mode": "i2v",
         "images": [
@@ -113,8 +113,8 @@ const response = await fetch("https://td.geeknow.top/v1/videos", {
   body: JSON.stringify({
     model: "muse-video",
     prompt: "以第一张图为起始画面，结合第二张图的场景和风格，镜头平稳向前推进",
-    duration: 10,
-    seconds: "10",
+    duration: 30,
+    seconds: "30",
     size: "16:9",
     mode: "i2v",
     images: [
@@ -142,11 +142,11 @@ console.log(result.id || result.task_id);
 </ParamField>
 
 <ParamField body="duration" type="integer" required>
-期望视频时长，单位为秒。可选 `10` 或 `15`，使用 JSON 整数。同时提交与之数值一致的 `seconds` 字符串。实际时长以生成结果为准。
+期望视频时长，单位为秒。可选 `10`、`15` 或 `30`，使用 JSON 整数。同时提交与之数值一致的 `seconds` 字符串。实际时长以生成结果为准。
 </ParamField>
 
 <ParamField body="seconds" type="string" required>
-视频时长的字符串形式，可选 `"10"` 或 `"15"`。必须与 `duration` 数值一致，例如 `"duration": 10` 对应 `"seconds": "10"`。请同时提交两个字段。
+视频时长的字符串形式，可选 `"10"`、`"15"` 或 `"30"`。必须与 `duration` 数值一致，例如 `"duration": 30` 对应 `"seconds": "30"`。请同时提交两个字段。
 </ParamField>
 
 <ParamField body="size" type="string" required>
@@ -169,7 +169,7 @@ console.log(result.id || result.task_id);
 
 | 项目 | 提交方式 |
 | --- | --- |
-| 时长 | 同时提交 `duration` 整数和 `seconds` 字符串，如 `10` 与 `"10"`，或 `15` 与 `"15"` |
+| 时长 | 同时提交 `duration` 整数和 `seconds` 字符串：`10` 与 `"10"`、`15` 与 `"15"`，或 `30` 与 `"30"` |
 | 画幅 | 使用 `size`，例如 `"16:9"` |
 | 文生视频 | 省略 `image`、`images` 和 `mode` |
 | 首帧生视频 | 使用单个 `image` URL，省略 `images` 和 `mode` |
@@ -218,7 +218,7 @@ console.log(result.id || result.task_id);
 
 | 情况 | 处理建议 |
 | --- | --- |
-| `400` 等参数错误 | 检查非空 `prompt`、合法 `size`、图片字段，以及 `duration` / `seconds` 的类型和数值是否一致；时长选择 `10` 或 `15` 秒 |
+| `400` 等参数错误 | 检查非空 `prompt`、合法 `size`、图片字段，以及 `duration` / `seconds` 的类型和数值是否一致；时长选择 `10`、`15` 或 `30` 秒 |
 | `plugin_usage_invalid` | 用量参数校验失败。核对请求字段；如仍失败，保留完整错误响应并联系技术支持 |
 | `401` / `403` | 检查 API Key 和模型访问权限 |
 | `429` | 降低并发，按服务端提示退避后重试 |
